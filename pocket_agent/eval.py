@@ -12,6 +12,9 @@ ENGINE = ToolDecisionEngine()
 
 
 def _load_rows(path: Path) -> list[dict[str, object]]:
+    if not path.exists():
+        raise FileNotFoundError(f"Evaluation file not found: {path}. Try --path starter/shadow_eval.jsonl")
+
     rows: list[dict[str, object]] = []
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
@@ -57,9 +60,12 @@ def evaluate(path: Path) -> dict[str, float]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate Pocket-Agent on a local JSONL set.")
-    parser.add_argument("--path", required=True)
+    parser.add_argument("--path", default="starter/shadow_eval.jsonl")
     args = parser.parse_args()
-    metrics = evaluate(Path(args.path))
+    try:
+        metrics = evaluate(Path(args.path))
+    except FileNotFoundError as exc:
+        raise SystemExit(str(exc))
     print(json.dumps(metrics, indent=2))
 
 
