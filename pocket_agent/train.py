@@ -62,7 +62,7 @@ def main() -> None:
     parser.add_argument("--data", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--base-model", default="Qwen/Qwen2.5-1.5B-Instruct")
-    parser.add_argument("--max-steps", type=int, default=1000)
+    parser.add_argument("--max-steps", type=int, default=500)
     args = parser.parse_args()
 
     data_path = Path(args.data)
