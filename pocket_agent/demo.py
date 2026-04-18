@@ -10,6 +10,26 @@ def chat(prompt: str, history: list[dict[str, Any]] | None = None) -> str:
     return run(prompt, history or [])
 
 
+def _history_to_messages(chat_history: list[dict[str, str]] | list[list[str]] | None) -> list[dict[str, str]]:
+    if not chat_history:
+        return []
+
+    messages: list[dict[str, str]] = []
+    for item in chat_history:
+        if isinstance(item, dict):
+            role = str(item.get("role", "user"))
+            content = str(item.get("content", ""))
+            if role in {"user", "assistant", "system"} and content:
+                messages.append({"role": role, "content": content})
+        elif isinstance(item, list) and len(item) == 2:
+            user_text, assistant_text = item
+            if isinstance(user_text, str) and user_text:
+                messages.append({"role": "user", "content": user_text})
+            if isinstance(assistant_text, str) and assistant_text:
+                messages.append({"role": "assistant", "content": assistant_text})
+    return messages
+
+
 def launch_gradio() -> None:
     try:
         import gradio as gr  # type: ignore
@@ -17,22 +37,31 @@ def launch_gradio() -> None:
         raise SystemExit(f"Gradio is not available: {exc}")
 
     def respond(message: str, chat_history: list[list[str]]) -> tuple[str, list[list[str]]]:
-        history_messages: list[dict[str, str]] = []
-        for user_text, assistant_text in chat_history:
-            history_messages.append({"role": "user", "content": user_text})
-            history_messages.append({"role": "assistant", "content": assistant_text})
+        history_messages = _history_to_messages(chat_history)
         assistant_text = chat(message, history_messages)
-        chat_history = chat_history + [[message, assistant_text]]
-        return "", chat_history
+        updated_history = chat_history + [[message, assistant_text]]
+        return "", updated_history
 
     with gr.Blocks(title="Pocket-Agent Demo") as demo:
-        gr.Markdown("# Pocket-Agent\nOffline tool-calling demo with visible tool-call output.")
+        gr.Markdown(
+            "# Pocket-Agent\n"
+            "Send a message and the model will reply with either a tool call or a refusal."
+        )
         chatbot = gr.Chatbot(height=420)
-        prompt = gr.Textbox(label="Message", placeholder="Ask for weather, calendar, conversion, currency, or SQL help.")
+        with gr.Row():
+            prompt = gr.Textbox(
+                label="Message",
+                placeholder="Ask for weather, calendar, conversion, currency, or SQL help.",
+                scale=5,
+            )
+            send = gr.Button("Send", variant="primary", scale=1)
         clear = gr.Button("Clear")
+
         prompt.submit(respond, [prompt, chatbot], [prompt, chatbot])
+        send.click(respond, [prompt, chatbot], [prompt, chatbot])
         clear.click(lambda: ("", []), None, [prompt, chatbot])
-    demo.launch()
+
+    demo.launch(inbrowser=False)
 
 
 def launch_cli() -> None:
