@@ -1,0 +1,18 @@
+{"messages":[{"role":"user","content":"What's the weather in Lima in C?"},{"role":"assistant","content":"<tool_call>{\"tool\":\"weather\",\"args\":{\"location\":\"Lima\",\"unit\":\"C\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"Schedule a meeting called project sync on 2026-04-22."},{"role":"assistant","content":"<tool_call>{\"tool\":\"calendar\",\"args\":{\"action\":\"create\",\"date\":\"2026-04-22\",\"title\":\"project sync\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"Convert 14 km to mile."},{"role":"assistant","content":"<tool_call>{\"tool\":\"convert\",\"args\":{\"value\":14,\"from_unit\":\"km\",\"to_unit\":\"mile\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"How much is 50 USD in EUR?"},{"role":"assistant","content":"<tool_call>{\"tool\":\"currency\",\"args\":{\"amount\":50,\"from\":\"USD\",\"to\":\"EUR\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"Write a SQL query for active subscriptions."},{"role":"assistant","content":"<tool_call>{\"tool\":\"sql\",\"args\":{\"query\":\"SELECT * FROM subscriptions WHERE status = 'active';\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"tomorrow morning weather in Nairobi in F"},{"role":"assistant","content":"<tool_call>{\"tool\":\"weather\",\"args\":{\"location\":\"Nairobi\",\"unit\":\"F\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"Please add doctor's visit next Friday."},{"role":"assistant","content":"<tool_call>{\"tool\":\"calendar\",\"args\":{\"action\":\"create\",\"date\":\"2026-04-24\",\"title\":\"doctor's visit\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"Convert 5 kg to lb."},{"role":"assistant","content":"<tool_call>{\"tool\":\"convert\",\"args\":{\"value\":5,\"from_unit\":\"kg\",\"to_unit\":\"lb\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"cuanto es 20 eur a usd"},{"role":"assistant","content":"<tool_call>{\"tool\":\"currency\",\"args\":{\"amount\":20,\"from\":\"EUR\",\"to\":\"USD\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"show my calendar on 2026-04-18"},{"role":"assistant","content":"<tool_call>{\"tool\":\"calendar\",\"args\":{\"action\":\"list\",\"date\":\"2026-04-18\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"weather for Casablanca please"},{"role":"assistant","content":"<tool_call>{\"tool\":\"weather\",\"args\":{\"location\":\"Casablanca\",\"unit\":\"C\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"convert 9 miles to km"},{"role":"assistant","content":"<tool_call>{\"tool\":\"convert\",\"args\":{\"value\":9,\"from_unit\":\"mile\",\"to_unit\":\"km\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"book a train ticket"},{"role":"assistant","content":"I can only help with weather, calendar, convert, currency, or sql requests."}]}
+{"messages":[{"role":"user","content":"hello there"},{"role":"assistant","content":"I can only help with weather, calendar, convert, currency, or sql requests."}]}
+{"messages":[{"role":"user","content":"convert that to euros"},{"role":"assistant","content":"I can only help with weather, calendar, convert, currency, or sql requests."}]}
+{"messages":[{"role":"user","content":"what can you do?"},{"role":"assistant","content":"I can only help with weather, calendar, convert, currency, or sql requests."}]}
+{"messages":[{"role":"user","content":"show sql for recent orders"},{"role":"assistant","content":"<tool_call>{\"tool\":\"sql\",\"args\":{\"query\":\"SELECT * FROM orders ORDER BY created_at DESC LIMIT 20;\"}}</tool_call>"}]}
+{"messages":[{"role":"user","content":"move the lunch meeting to tomorrow"},{"role":"assistant","content":"<tool_call>{\"tool\":\"calendar\",\"args\":{\"action\":\"create\",\"date\":\"2026-04-19\",\"title\":\"lunch meeting\"}}</tool_call>"}]}
