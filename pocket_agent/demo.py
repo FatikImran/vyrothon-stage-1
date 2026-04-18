@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+import re
 from typing import Any
 
 
@@ -8,6 +10,21 @@ def chat(prompt: str, history: list[dict[str, Any]] | None = None) -> str:
     from inference import run
 
     return run(prompt, history or [])
+
+
+def _format_answer(raw_answer: str) -> str:
+    match = re.search(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", raw_answer, flags=re.DOTALL)
+    if not match:
+        return raw_answer
+
+    try:
+        payload = json.loads(match.group(1))
+        tool = payload.get("tool", "unknown")
+        args = payload.get("args", {})
+        pretty_args = json.dumps(args, indent=2, ensure_ascii=False)
+        return f"Tool: {tool}\nArgs:\n{pretty_args}\n\nRaw:\n{raw_answer}"
+    except Exception:
+        return raw_answer.replace("<", "&lt;").replace(">", "&gt;")
 
 
 def _history_to_messages(chat_history: list[dict[str, str]] | list[list[str]] | None) -> list[dict[str, str]]:
@@ -52,7 +69,7 @@ def launch_gradio(share: bool = False) -> None:
 
     def respond(message: str, chat_history: list[dict[str, str]]) -> tuple[str, list[dict[str, str]]]:
         history_messages = _history_to_messages(_messages_to_history(chat_history))
-        assistant_text = chat(message, history_messages)
+        assistant_text = _format_answer(chat(message, history_messages))
         updated_history = chat_history + [
             {"role": "user", "content": message},
             {"role": "assistant", "content": assistant_text},
