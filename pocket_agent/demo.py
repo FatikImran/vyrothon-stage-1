@@ -30,16 +30,33 @@ def _history_to_messages(chat_history: list[dict[str, str]] | list[list[str]] | 
     return messages
 
 
-def launch_gradio() -> None:
+def _messages_to_history(messages: list[dict[str, str]]) -> list[list[str]]:
+    history: list[list[str]] = []
+    pending_user: str | None = None
+    for message in messages:
+        role = message.get("role")
+        content = message.get("content", "")
+        if role == "user":
+            pending_user = content
+        elif role == "assistant" and pending_user is not None:
+            history.append([pending_user, content])
+            pending_user = None
+    return history
+
+
+def launch_gradio(share: bool = False) -> None:
     try:
         import gradio as gr  # type: ignore
     except Exception as exc:  # pragma: no cover - demo dependency optional
         raise SystemExit(f"Gradio is not available: {exc}")
 
-    def respond(message: str, chat_history: list[list[str]]) -> tuple[str, list[list[str]]]:
-        history_messages = _history_to_messages(chat_history)
+    def respond(message: str, chat_history: list[dict[str, str]]) -> tuple[str, list[dict[str, str]]]:
+        history_messages = _history_to_messages(_messages_to_history(chat_history))
         assistant_text = chat(message, history_messages)
-        updated_history = chat_history + [[message, assistant_text]]
+        updated_history = chat_history + [
+            {"role": "user", "content": message},
+            {"role": "assistant", "content": assistant_text},
+        ]
         return "", updated_history
 
     with gr.Blocks(title="Pocket-Agent Demo") as demo:
@@ -47,7 +64,7 @@ def launch_gradio() -> None:
             "# Pocket-Agent\n"
             "Send a message and the model will reply with either a tool call or a refusal."
         )
-        chatbot = gr.Chatbot(height=420)
+        chatbot = gr.Chatbot(height=420, type="messages", allow_tags=False)
         with gr.Row():
             prompt = gr.Textbox(
                 label="Message",
@@ -61,7 +78,7 @@ def launch_gradio() -> None:
         send.click(respond, [prompt, chatbot], [prompt, chatbot])
         clear.click(lambda: ("", []), None, [prompt, chatbot])
 
-    demo.launch(inbrowser=False)
+    demo.launch(inbrowser=False, share=share)
 
 
 def launch_cli() -> None:
@@ -80,11 +97,12 @@ def launch_cli() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Launch the Pocket-Agent demo.")
     parser.add_argument("--cli", action="store_true", help="Run in terminal mode instead of Gradio.")
+    parser.add_argument("--share", action="store_true", help="Enable a public Gradio link (recommended for Colab).")
     args = parser.parse_args()
     if args.cli:
         launch_cli()
     else:
-        launch_gradio()
+        launch_gradio(share=args.share)
 
 
 if __name__ == "__main__":
